@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vérification OTP</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+    }
+    .header {
+      text-align: center;
+      padding: 20px;
+      background-color: #4caf50;
+      color: #fff;
+      border-radius: 10px 10px 0 0;
+    }
+    .otp {
+      font-size: 24px;
+      color: #333;
+      font-weight: bold;
+      text-align: center;
+      margin: 30px 0;
+    }
+    .footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      color: #777;
+    }
+
+    /* Media Query pour mobile */
+    @media (max-width: 600px) {
+      .container {
+        width: 100%;
+        padding: 10px;
+      }
+
+      .otp {
+        font-size: 20px;
+        margin: 20px 0;
+      }
+
+      .header h1 {
+        font-size: 22px;
+      }
+
+      .footer {
+        font-size: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>{{title}}</h1>
+    </div>
+    <p>Salut, {{username}}</p>
+    <p>{{message}}: </p>
+    <div class="otp">{{otp}}</div>
+    <p>Si vous n'êtes pas à l'origine de cette demande, veuillez ignorer cet e-mail.</p>
+    <div class="footer">
+      <p>Merci d'avoir utilisé nos services.</p>
+    </div>
+  </div>
+</body>
+</html>
