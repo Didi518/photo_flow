@@ -68,7 +68,13 @@
     </div>
     <p>Salut, {{username}}</p>
     <p>{{message}}: </p>
-    <div class="otp">{{otp}}</div>
+    <div class="otp">
+  {{#if isLink}}
+    <a href="{{otp}}" style="color:#4caf50;word-break:break-all;">{{otp}}</a>
+  {{else}}
+    {{otp}}
+  {{/if}}
+</div>
     <p>Si vous n'êtes pas à l'origine de cette demande, veuillez ignorer cet e-mail.</p>
     <div class="footer">
       <p>Merci d'avoir utilisé nos services.</p>

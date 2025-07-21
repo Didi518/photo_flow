@@ -32,6 +32,7 @@ const emailTemplates = {
       username,
       otp,
       message: 'Votre code de vérification à usage unique est: ',
+      isLink: false,
     }),
 
   passwordReset: (username, otp) =>
@@ -39,7 +40,8 @@ const emailTemplates = {
       title: 'Réinitialisation du mot de passe',
       username,
       otp,
-      message: 'Votre code de réinitialisation est: ',
+      message: 'Veillez suivre ce lien afin de modifier le mot de passe: ',
+      isLink: true,
     }),
 
   welcome: (username) =>

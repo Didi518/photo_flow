@@ -16,16 +16,20 @@ exports.createPost = catchAsync(async (req, res, next) => {
 
   if (!image) return next(new AppError("L'image est requise.", 400));
 
+  const isPng = image.mimetype.includes('png');
+  const outputFormat = isPng ? 'png' : 'jpeg';
+
   const optimizedImageBuffer = await sharp(image.buffer)
+    .rotate()
     .resize({
       width: 800,
       height: 800,
       fit: 'inside',
     })
-    .toFormat('jpeg', { quality: 80 })
+    .toFormat(outputFormat, { quality: 80 })
     .toBuffer();
 
-  const fileUri = `data:image/jpeg;base64,${optimizedImageBuffer.toString(
+  const fileUri = `data:image/${outputFormat};base64,${optimizedImageBuffer.toString(
     'base64'
   )}`;
 
@@ -212,5 +216,43 @@ exports.likeDislike = catchAsync(async (req, res, next) => {
   return res.status(200).json({
     status: 'success',
     message: isLiked ? 'Post retiré des likes.' : 'Post liké avec succès.',
+  });
+});
+
+exports.addComment = catchAsync(async (req, res, next) => {
+  const { id: postId } = req.params;
+  const userId = req.user._id;
+  const { text } = req.body;
+
+  const post = await Post.findById(postId);
+  if (!post) {
+    return next(new AppError('Post non trouvé.', 404));
+  }
+
+  if (!text || text.trim() === '') {
+    return next(new AppError('Le texte du commentaire est requis.', 400));
+  }
+
+  const comment = await Comment.create({
+    text,
+    user: userId,
+    createdAt: Date.now(),
+  });
+
+  post.comments.push(comment);
+
+  await post.save({ validateBeforeSave: false });
+
+  await comment.populate({
+    path: 'user',
+    select: 'username bio profilePicture',
+  });
+
+  res.status(201).json({
+    status: 'success',
+    message: 'Commentaire ajouté avec succès.',
+    data: {
+      comment,
+    },
   });
 });

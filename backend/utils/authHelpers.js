@@ -19,7 +19,6 @@ const createSendToken = (user, statusCode, res, message) => {
 
   res.cookie('token', token, cookieOptions);
 
-  // Nettoyer les données sensibles
   user.password = undefined;
   user.otp = undefined;
 

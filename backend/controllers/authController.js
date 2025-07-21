@@ -25,7 +25,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
   validatePasswordMatch(password, passwordConfirm);
 
   const otp = generateOtp();
-  const otpExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 heures
+  const otpExpires = Date.now() + 24 * 60 * 60 * 1000;
 
   const newUser = await User.create({
     username,
@@ -189,15 +189,11 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ email });
 
   if (user) {
-    const otp = generateOtp();
-    const resetExpires = Date.now() + 10 * 60 * 1000;
-
-    user.resetPasswordOtp = otp;
-    user.resetPasswordOtpExpires = resetExpires;
-
+    const resetToken = user.createPasswordResetToken();
     await user.save({ validateBeforeSave: false });
 
-    const htmlTemplate = emailTemplates.passwordReset(user.username, otp);
+    const resetUrl = `${process.env.FRONTEND_URL}/auth/reinitialiser-mdp?token=${resetToken}`;
+    const htmlTemplate = emailTemplates.passwordReset(user.username, resetUrl);
 
     try {
       await sendEmail({
@@ -206,8 +202,8 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
         html: htmlTemplate,
       });
     } catch (error) {
-      user.resetPasswordOtp = undefined;
-      user.resetPasswordOtpExpires = undefined;
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
       await user.save({ validateBeforeSave: false });
 
       return next(
@@ -221,32 +217,42 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    message: 'Si cet e-mail existe, un code de réinitialisation a été envoyé.',
+    message: 'Si cet e-mail existe, un lien de réinitialisation a été envoyé.',
   });
 });
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
-  const { email, otp, password, passwordConfirm } = req.body;
+  const { token, password, passwordConfirm } = req.body;
 
   validatePasswordStrength(password);
   validatePasswordMatch(password, passwordConfirm);
 
+  const crypto = require('crypto');
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
   const user = await User.findOne({
-    email,
-    resetPasswordOtp: otp,
-    resetPasswordOtpExpires: { $gt: Date.now() },
-  });
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  }).select('+password');
 
   if (!user) {
     return next(
-      new AppError('Code de réinitialisation invalide ou expiré.', 400)
+      new AppError('Lien de réinitialisation invalide ou expiré.', 400)
+    );
+  }
+
+  if (await user.correctPassword(password, user.password)) {
+    return next(
+      new AppError(
+        "Le nouveau mot de passe doit être différent de l'ancien.",
+        400
+      )
     );
   }
 
   user.password = password;
   user.passwordConfirm = passwordConfirm;
-  user.resetPasswordOtp = undefined;
-  user.resetPasswordOtpExpires = undefined;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
 
   await user.save();
 
