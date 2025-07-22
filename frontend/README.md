@@ -1,36 +1,111 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PhotoFlow
 
-## Getting Started
+PhotoFlow est une application web de partage de photos moderne, inspirée d'Instagram, développée avec Next.js 15 (frontend) et Express/MongoDB (backend).
 
-First, run the development server:
+## Fonctionnalités principales
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Authentification sécurisée (inscription, connexion, mot de passe oublié, vérification email)
+- Création, édition et suppression de posts avec upload d'image (Cloudinary)
+- Fil d'actualité (feed) en temps réel
+- Commentaires, likes, sauvegarde de posts
+- Système de follow/unfollow entre utilisateurs
+- Profil utilisateur avec édition et affichage des posts/sauvegardes
+- Notifications (Sonner)
+- UI responsive et moderne (Tailwind CSS, Lucide React)
+
+## Stack technique
+
+- **Frontend** : Next.js 15 (app directory), React 19, Redux Toolkit, TypeScript, Tailwind CSS, Lucide React, Sonner
+- **Backend** : Express.js, MongoDB/Mongoose, Cloudinary, JWT, bcryptjs
+- **Autres** : redux-persist, axios, @radix-ui/react, ESLint, dotenv
+
+## Structure du projet
+
+```
+photo_flow/
+├── backend/
+│   ├── app.js, server.js, config.env
+│   ├── controllers/, models/, routes/, utils/
+│   └── config/ (db, cors, cloudinary...)
+├── frontend/
+│   ├── app/ (Next.js app directory)
+│   ├── components/ (UI, helpers, home, auth, profile...)
+│   ├── store/ (Redux slices)
+│   ├── types.d.ts, server.ts, globals.css
+│   └── package.json, README.md
+└── README.md (ce fichier)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Installation & Lancement
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Prérequis
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Node.js >= 18
+- MongoDB local ou Atlas
+- Un compte Cloudinary
 
-## Learn More
+### Variables d'environnement
 
-To learn more about Next.js, take a look at the following resources:
+- `backend/config.env` :
+  - `PORT=8000`
+  - `DATABASE=...` (URI MongoDB)
+  - `JWT_SECRET=...`
+  - `CLOUDINARY_CLOUD_NAME=...`
+  - `CLOUDINARY_API_KEY=...`
+  - `CLOUDINARY_API_SECRET=...`
+- `frontend/.env.local` :
+  - `NEXT_PUBLIC_BACKEND_API=http://localhost:8000/api/v1`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Démarrage
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Dans deux terminaux séparés :
 
-## Deploy on Vercel
+```bash
+# Backend
+cd backend
+npm install
+npm run dev
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Frontend
+cd frontend
+npm install
+npm run dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Accède à [http://localhost:3000](http://localhost:3000)
+
+## Scripts utiles
+
+- `npm run dev` : Démarrage en mode développement
+- `npm run build` : Build production (frontend)
+- `npm run start` : Lancer le build (frontend)
+- `npm run lint` : Linter le code
+
+## API REST (exemples)
+
+- `POST   /api/v1/users/signup` — Inscription
+- `POST   /api/v1/users/login` — Connexion
+- `POST   /api/v1/posts/create-post` — Créer un post
+- `GET    /api/v1/posts/all` — Feed
+- `DELETE /api/v1/posts/delete-post/:id`— Supprimer un post
+- `PATCH  /api/v1/posts/like-dislike/:id` — Like/Dislike
+- `POST   /api/v1/posts/comment/:id` — Ajouter un commentaire
+- `PATCH  /api/v1/users/follow-unfollow/:id` — Suivre/Se désabonner
+
+## Bonnes pratiques & Architecture
+
+- Séparation stricte frontend/backend
+- Gestion d’état centralisée (Redux Toolkit)
+- Gestion des erreurs et loading centralisée (handleAuthRequest)
+- UI réactive, feedback utilisateur (Sonner)
+- Sécurité : JWT, bcryptjs, CORS, helmet, sanitization
+- Code typé (TypeScript côté front)
+
+## Déploiement
+
+- Frontend : Vercel (Next.js)
+- Backend : Railway, Render, ou VPS
+
+---
+
+> Projet réalisé par Didi518 — 2025
