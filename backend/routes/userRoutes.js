@@ -39,7 +39,7 @@ router.patch(
   editProfile
 );
 router.get('/suggested-users', isAuthenticated, suggestedUsers);
-router.post('/follow-unfollow/:id', isAuthenticated, followUnfollow);
+router.patch('/follow-unfollow/:id', isAuthenticated, followUnfollow);
 router.get('/me', isAuthenticated, getMe);
 
 module.exports = router;

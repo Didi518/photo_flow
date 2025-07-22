@@ -32,6 +32,13 @@ const ForgotPassword = () => {
       );
     };
     const result = await handleAuthRequest(resetReq, setIsLoading);
+    if (result?.data.status !== 'success') {
+      toast.error(
+        result?.data?.message ||
+          "Erreur lors de l'envoi du lien de réinitialisation. Vérifiez votre adresse email."
+      );
+      return;
+    }
     if (result) {
       toast.success(result.data.message || 'Lien de réinitialisation envoyé!');
     }
@@ -59,7 +66,7 @@ const ForgotPassword = () => {
         type="submit"
         isLoading={isLoading}
         disabled={!canSend || !email.trim()}
-        className="w-40 mt-4"
+        className={`w-40 mt-4 ${isSending ? 'bg-gray-300' : 'bg-red-600'}`}
         size="lg"
         onClick={handleSubmit}
       >

@@ -28,7 +28,7 @@ const loadTemplate = (templateName, replacements) => {
 const emailTemplates = {
   verification: (username, otp) =>
     loadTemplate('otpTemplate.hbs', {
-      title: "Vérification de l'e-mail",
+      title: 'Vérification du compte',
       username,
       otp,
       message: 'Votre code de vérification à usage unique est: ',
