@@ -8,7 +8,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "install": "npm install && npm run build"
+    "install": "npm install"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
